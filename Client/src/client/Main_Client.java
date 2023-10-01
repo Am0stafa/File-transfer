@@ -2,19 +2,24 @@ package client;
 
 import data.DataFileServer;
 import data.DataReader;
+
 import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+
 import java.awt.Component;
 import java.io.File;
 import java.net.URISyntaxException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import swing.CellEditor;
 import swing.CellEditorFile;
 
