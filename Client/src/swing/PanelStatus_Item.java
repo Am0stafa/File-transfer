@@ -12,8 +12,6 @@ public class PanelStatus_Item extends javax.swing.JLayeredPane {
         pro.setValue(values);
     }
 
-    // @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         pro = new javax.swing.JProgressBar();

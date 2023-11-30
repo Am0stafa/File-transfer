@@ -260,23 +260,26 @@ public class Server extends javax.swing.JFrame {
     }
 
     private int initFileTransfer(SocketIOClient client, DataInitFile dataInit) {
-        int id = 0;
-        for (int i = 0; i < table.getRowCount(); i++) {
-            DataClient data = (DataClient) table.getValueAt(i, 0);
-            if (data.getClient() == client) {
-                try {
-                    id = generateFileID();
-                    File file = new File("D:/soket_data/" + id + "-" + dataInit.getFileName());
-                    DataWriter writer = new DataWriter(file, dataInit.getFileSize());
-                    data.addWrite(writer, id);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-        }
-        return id;
-    }
+      int id = 0;
+      for (int i = 0; i < table.getRowCount(); i++) {
+          DataClient data = (DataClient) table.getValueAt(i, 0);
+          if (data.getClient() == client) {
+              try {
+                  id = generateFileID();
+                  // Use the system's temporary directory
+                  String tempDir = System.getProperty("java.io.tmpdir");
+                  File file = new File(new File(tempDir), id + "-" + dataInit.getFileName());
+                  DataWriter writer = new DataWriter(file, dataInit.getFileSize());
+                  data.addWrite(writer, id);
+              } catch (Exception e) {
+                  e.printStackTrace();
+              }
+              break;
+          }
+      }
+      return id;
+  }
+  
 
     private boolean writeFile(SocketIOClient client, DataFileSending file) {
         boolean error = false;

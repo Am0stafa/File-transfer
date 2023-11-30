@@ -1,4 +1,6 @@
 /*
+This class represents a file that exists on the server side, and it is used to manage and interact with these files from the client's perspective. download the file from the server, and save it to a specified location on the client's machine. It also provides functionality for pausing and resuming file saving, as well as updating the status of the file being saved.
+
 1. Maintaining File Information:
    - The class keeps track of certain information related to a file, such as its ID (`fileID`), name (`fileName`), size (`fileSize`), output path (`outPutPath`), and status (`status`). There are getter and setter methods provided for each of these fields.
 
@@ -6,13 +8,13 @@
    - There are two constructors in this class. One initializes a `DataFileServer` object with specified values for `fileID`, `fileName`, `fileSize`, `outPutPath`, and `status`. The other initializes a `DataFileServer` object based on a `JSONObject`, a `JTable`, and a `Socket` object, extracting file information from the `JSONObject`.
 
 3. File Saving Functionality:
-   - There's a private method `saveFile` which seems to handle writing data to a file. It appears to be utilizing a `DataWriter` object for writing data, and a `Socket` object for requesting data from a server. It also updates a `PanelStatus_Item` object and a `JTable` object to reflect the current status of the file being saved.
+   - There's a private method `saveFile` which seems to handle writing data to a file. It utilize a `DataWriter` object for writing data, and a `Socket` object for requesting data from a server. It also updates a `PanelStatus_Item` object and a `JTable` object to reflect the current status of the file being saved.
 
 4. User Interaction for File Saving:
    - There are action listeners added to a `PanelStatus_Item` object (`item`) within the constructor that initializes with a `JSONObject`. These listeners handle user interactions for saving a file to a specified location and pausing/resuming file saving.
 
 5. Table Row Representation:
-   - There's a method `toTableRow` that seems to create an array of objects representing a row in a table, which might be used to display file information in a GUI.
+   - There's a method `toTableRow` create an array of objects representing a row in a table, which might be used to display file information in a GUI.
 
 6. Networking:
    - The class communicates with a server to request file data via a `Socket` object. In the `saveFile` method, it emits a "request_file" event to the server with the `fileID` and current file length and receives file data in response, which is then written to the file.
@@ -34,10 +36,6 @@ import swing.PanelStatus_Item;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author RAVEN
- */
 public class DataFileServer {
 
     public DataFileServer(int fileID, String fileName, String fileSize, File outPutPath, boolean status) {

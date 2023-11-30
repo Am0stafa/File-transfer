@@ -7,10 +7,6 @@ package swing;
 
 import java.util.HashMap;
 
-/**
- *
- * @author RAVEN
- */
 public class PanelStatus extends javax.swing.JLayeredPane {
 
     /**

@@ -1,3 +1,6 @@
+// create the client GUI and handle the client-side logic for the file transfer application
+// It initializes a Socket object to connect to a server. It listens for events like "exit_app" and "new_file" and handles them appropriately. 
+
 package client;
 
 import data.DataFileServer;
@@ -23,19 +26,23 @@ import org.json.JSONObject;
 import swing.CellEditor;
 import swing.CellEditorFile;
 
+/*
+ * This class combines a Swing-based GUI with Socket. IO-based network communication to allow users to connect to a server, send and receive file data, and view files on the server. It also handles UI updates based on file transfer status and server responses.
+ */
 
 public class Main_Client extends javax.swing.JFrame {
   
-  /**
+  /*
    * The Main_Client class initializes the table cell renderers and editors for two different types of data objects (DataReader and DataFileServer).
-   *
    * Example Usage:
    * Main_Client client = new Main_Client();
    */
-  public Main_Client() {
-        initComponents();
+  public Main_Client(){
+        initComponents(); // init the gui component
+        // rending of the tables and set the cell editor
         model = (DefaultTableModel) table.getModel();
         modelFile = (DefaultTableModel) tableFile.getModel();
+
         table.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
@@ -53,6 +60,7 @@ public class Main_Client extends javax.swing.JFrame {
         });
 
         table.getColumnModel().getColumn(4).setCellEditor(new CellEditor());
+
         tableFile.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
@@ -63,11 +71,15 @@ public class Main_Client extends javax.swing.JFrame {
                 return c;
             }
         });
+
         tableFile.getColumnModel().getColumn(4).setCellEditor(new CellEditorFile());
     }
 
     /**
      * This method is called from within the constructor to initialize the form.
+     * Sets up the GUI layout, components, and event listeners for buttons like "Connect" and "File".
+     * cmdConnect button is linked to cmdConnectActionPerformed(), which handles the action of connecting to the server.
+     * jButton1 is linked to jButton1ActionPerformed(), which opens a file chooser dialog to select files for transfer.
      */
     private void initComponents() {
 
@@ -231,10 +243,9 @@ public class Main_Client extends javax.swing.JFrame {
     
     /**
      * Handles the action when the "Connect" button is clicked in the GUI.
-     * Establishes a connection with a server using a socket, sets up event listeners for specific events,
-     * and sends/receives data to/from the server.
-     *
+     * Establishes a connection with a server using a socket, sets up event listeners for specific events and sends/receives data to/from the server.
      * @param evt The event object representing the action performed (in this case, clicking the "Connect" button).
+     * basically its is triggered when the "Connect" button is clicked. It establishes a socket connection, sets up listeners for socket events, and emits events to the server and sets up event listeners for different socket events like "exit_app" and "new_file".
      */
     private void cmdConnectActionPerformed(java.awt.event.ActionEvent evt) {
         if (client == null) {
@@ -284,7 +295,7 @@ public class Main_Client extends javax.swing.JFrame {
     /**
      * Event handler for the "File" button in the GUI.
      * Allows the user to select multiple files using a file chooser dialog and then adds each selected file to a table in the GUI.
-     * 
+     * It uses DataReader to initiate the sending process.
      * @param evt The event object representing the button click event.
      */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -307,14 +318,14 @@ public class Main_Client extends javax.swing.JFrame {
 
     /**
      * Adds a new row to the tableFile table in the GUI with the data from the DataFileServer object.
-     * 
+     * basically its a method adds file information to the tableFile model, presumably to display files available on the server.
      * @param data The DataFileServer object containing the data to be added to the table.
      */
     private void addFile(DataFileServer data) {
         modelFile.addRow(data.toTableRow(tableFile.getRowCount() + 1));
     }
 
-    // Main method for the Main_Client class.
+    // Main method for the Main_Client class and makes the Main_Client window visible, starting the client-side application.
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
