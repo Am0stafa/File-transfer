@@ -23,6 +23,7 @@ This project is a Java-based file transfer system designed to facilitate seamles
 ![2021-06-21_202412](https://user-images.githubusercontent.com/58245926/122769480-cc713800-d2ce-11eb-9ba5-d0a1bec27e84.png)
 
 
+
 ## Installation
 1. **Prerequisites**: Java JDK 8 or higher.
 2. **Setup**: Clone the repository and import the project into an IDE like IntelliJ IDEA or Eclipse.
@@ -59,4 +60,64 @@ This project is a Java-based file transfer system designed to facilitate seamles
 
 ## Contributing
 Contributions are welcome. Please fork the repository and submit a pull request with your changes.
+
+## TODO:
+Implement it to be a decentralized system where clients can download from each other and the server tracks the distribution of chunks across clients and coordinates the download of chunks from different clients simultaneously to assemble the file. Similar to BitTorrent.
+
+### Step 1: File Upload and Metadata Storage
+- **Server Side**:
+  - Implement MD5 hashing of the uploaded file.
+  - Create a CSV file structure with columns for `file_id`, `file_name`, `file_size`, `md5_hash`, `server_path`, and `client_distribution`.
+  - Store file metadata in the CSV upon upload.
+  - Save the file on the server and split it into chunks.
+
+### Step 2: Initial Download and IP Tracking
+- **Server Side**:
+  - On download request, serve the file from the server to the first client.
+  - Update the CSV, appending the client's IP to the `client_distribution` column, indicating that this client now has 100% of the file.
+
+### Step 3: Subsequent Downloads and Chunk Distribution
+- **Server Side**:
+  - Determine which clients have parts of the requested file based on the CSV.
+  - Direct new clients to download different chunks from different existing clients.
+  - Update the CSV to reflect the new distribution after each download.
+
+### Step 4: Server as Assembler and Validator
+- **Server Side**:
+  - After all chunks are downloaded, reassemble the file.
+  - Verify the file's integrity using MD5 hash.
+  - If the hash is correct, send the file to the requesting client.
+  - If not, send the server's original copy to ensure integrity.
+
+### Download Progress Bar and Status
+- **Client Side**:
+  - Modify the download progress bar to reflect the multi-source download process.
+  - Add a status message indicating the server's role in downloading and assembling chunks.
+
+### Implementation Steps
+#### Server Implementation
+1. Modify the `DataFileServer` class to handle MD5 hashing upon file upload.
+2. Update the server's upload handler to split files into chunks and store them.
+3. Implement functions to update the CSV with client IP and file chunk information.
+4. Create a function to orchestrate chunk downloads from multiple clients.
+5. Write a method to reassemble and validate the file using MD5 before sending it to the client.
+
+#### Client Implementation
+1. Update the client application to support downloading file chunks from multiple sources (other clients).
+2. Implement a function to upload file chunks to other clients upon request.
+3. Modify the client's download functionality to show a combined progress bar for chunks from different sources.
+4. Add UI elements to display the server's assembly and validation process.
+
+#### CSV File Handling
+1. Create a utility function to read and update the CSV file safely, handling serialization and deserialization of the `client_distribution` column.
+2. Implement logic to fairly distribute download requests across clients based on the chunk distribution.
+
+#### Testing and Validation
+1. Test the file upload process to ensure that the MD5 hash is correctly generated and stored.
+2. Validate the download process, ensuring that clients can download chunks from the server and other clients.
+3. Verify that the server correctly assembles and validates the file.
+4. Test the entire system with multiple clients to ensure proper operation and accurate tracking of file chunks.
+
+By following these steps, you will transform the existing system into a decentralized model that distributes file chunks across clients and leverages the server for coordination, validation, and fallback. This approach reduces the server's bandwidth and storage requirements and can improve download speeds by parallelizing the download process.
+
 
