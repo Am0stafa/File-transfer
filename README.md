@@ -1,15 +1,90 @@
 # File Transfer System
 
 ## Overview
-This project is a Java-based file transfer system designed to facilitate seamless upload and download of files via a centralized server. It allows multiple clients to connect to a server and manage file transfers, supported by a user-friendly Swing UI and robust concurrency handling.
+This project is a Java-based file transfer system that enables seamless file sharing between multiple clients through a centralized server. It provides a user-friendly interface for clients to upload and download files, while the server efficiently manages the file storage and transfer processes. The system is designed to handle concurrent client connections and ensures reliable and secure file transfers.
+
+## Architecture
+The file transfer system follows a client-server architecture, where multiple clients can connect to a central server to upload and download files. The architecture is composed of the following key components:
+
 
 ## Key Features
-- **Multi-client Support**: Multiple users can connect to the server simultaneously to upload or download files.
-- **Real-time Progress Tracking**: Both the client and server GUIs provide real-time updates on file transfer progress.
-- **Pause and Resume**: File transfers can be paused and resumed, adding flexibility to the user experience.
-- **Platform Independent**: Works across different platforms like Windows and macOS.
-- **Event-driven Architecture**: Utilizes Socket.IO for responsive, real-time communication.
 
+- **Multi-client Support**: The system supports multiple clients connecting to the server simultaneously, allowing concurrent file uploads and downloads.
+### How is that made possible?
+   - The server application uses the Socket.IO library to handle multiple client connections concurrently.
+
+   - When a client connects to the server, a new [SocketIOClient](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#64%2C63-64%2C63) object is created to represent that client.
+
+   - The server maintains a list of connected clients using [DataClient](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#53%2C54-53%2C54) objects, which store the [SocketIOClient](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#64%2C63-64%2C63) object, client name, and a map of [DataWriter](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#64%2C114-64%2C114) objects for handling file downloads.
+
+
+   - The server listens for various events emitted by the clients, such as file upload requests, file download requests, and disconnections, and handles them accordingly.
+
+
+   - This allows multiple clients to connect to the server simultaneously and perform file transfers independently.
+
+- **Real-time Progress Tracking**: Both the client and server GUIs provide real-time updates on the progress of file transfers, keeping users informed about the status of their uploads and downloads.
+### How is that made possible?
+
+   - The system utilizes the Socket.IO library's event-driven communication to provide real-time updates on the progress of file transfers.
+
+   - During a file upload, the client reads the file in chunks using [RandomAccessFile](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#82%2C83-82%2C83) and sends each chunk to the server via Socket.IO events.
+
+
+   - The server receives these chunks and writes them to disk using [RandomAccessFile](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#82%2C83-82%2C83). After each chunk is written, the server emits a progress event back to the client, indicating the current progress of the file upload.
+
+
+   - The server receives these chunks and writes them to disk using [RandomAccessFile](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#82%2C83-82%2C83). After each chunk is written, the server emits a progress event back to the client, indicating the current progress of the file upload.
+
+   - Similarly, during a file download, the client requests file chunks from the server, and the server reads the requested chunk from the file and sends it back to the client. The client writes the received chunks to disk and emits a progress event to update the download progress.
+
+   - The client and server GUIs listen for these progress events and update the respective progress bars or status indicators in real-time, providing visual feedback to the users.
+
+- **Pause and Resume**: The system allows users to pause and resume file transfers, providing flexibility and control over the transfer process.
+
+### How is that made possible?
+   - The system allows users to pause and resume file transfers by implementing control mechanisms on both the client and server sides.
+
+   - When a user clicks the "Pause" button during a file transfer, the client sends a pause event to the server via Socket.IO.
+
+
+   - The server receives the pause event and stops sending or receiving file chunks for that particular transfer. It maintains the current state of the transfer, including the file position and remaining data.
+
+   - When the user clicks the "Resume" button, the client sends a resume event to the server, indicating that the transfer should be resumed from where it was paused.
+
+   - The server receives the resume event and continues sending or receiving file chunks from the last known position, allowing the transfer to pick up where it left off.
+
+
+   - The client and server GUIs update the transfer status accordingly, reflecting the paused or resumed state of the transfer.
+
+- **Cross-platform Compatibility**: The application is built using Java, making it platform-independent and compatible with various operating systems such as Windows and macOS.
+### How is that made possible?
+
+   - The File Transfer System is built using Java, which is a platform-independent programming language.
+
+   - Java's "write once, run anywhere" principle allows the application to be compiled into bytecode that can be executed on any platform that supports a Java Virtual Machine (JVM).
+
+   - This means that the same codebase can be run on various operating systems, such as Windows, macOS, and Linux, without requiring any modifications.
+
+   - The use of Java Swing components for the graphical user interface ensures consistent appearance and behavior across different platforms.
+
+   - The Socket.IO library, which is used for communication between the client and server, is also cross-platform compatible and can be used seamlessly on different operating systems.
+- **Secure and Reliable**: The system ensures secure and reliable file transfers by utilizing robust error handling and data integrity checks.
+### How is that made possible?
+
+   - The File Transfer System incorporates robust error handling and data integrity checks to ensure secure and reliable file transfers.
+
+   - During file uploads and downloads, the system uses [RandomAccessFile](file:///Users/abdomostafa/peer-to-peer-file-sharing/README.md#82%2C83-82%2C83) to read and write file chunks, which provides low-level access to the file and ensures data integrity.
+
+   - The server validates the received file chunks and checks for any data corruption or inconsistencies before writing them to disk.
+
+
+   - In case of network disruptions or connection failures, the system implements appropriate error handling mechanisms. It can detect and handle socket exceptions, timeouts, and other network-related issues gracefully.
+
+   - The system can also implement additional security measures, such as encrypting the file data during transmission using secure protocols like SSL/TLS, to protect sensitive information from unauthorized access.
+
+   - Proper exception handling and logging mechanisms are used throughout the codebase to capture and handle any errors or exceptions that may occur during file transfers, ensuring the system remains stable and reliable.
+   
 ## Components
 - **Client Application**: Manages file uploads/downloads and user interactions.
 - **Server Application**: Handles incoming connections, file storage, and transfer management.
@@ -19,10 +94,67 @@ This project is a Java-based file transfer system designed to facilitate seamles
 ### Client
 ![2021-06-21_202358](https://user-images.githubusercontent.com/58245926/122769433-c3806680-d2ce-11eb-99fa-1368a281c36b.png)
 ![2021-06-21_202431](https://user-images.githubusercontent.com/58245926/122769452-c7ac8400-d2ce-11eb-9461-53b9f1658734.png)
+
+
+- The client application provides a graphical user interface (GUI) built using Java Swing components.
+
+- It allows users to connect to the server, view available files, upload new files, and download files from the server.
+
+- The client communicates with the server using the Socket.IO library, enabling real-time, event-driven communication.
+
+
+- It utilizes data classes such as `DataFileServer` and `DataReader` to handle file metadata and file upload/download operations.
+
 ### Server
 ![2021-06-21_202412](https://user-images.githubusercontent.com/58245926/122769480-cc713800-d2ce-11eb-9ba5-d0a1bec27e84.png)
 
 
+- The server application is responsible for managing client connections, file storage, and file transfer processes.
+
+- It listens for incoming client connections and handles various events such as file uploads, file requests, and client disconnections.
+
+- The server maintains a list of connected clients (`DataClient` objects) and keeps track of the files available for download (`DataFileServer` objects).
+
+- It uses a `JTable` to display the list of connected clients and their status.
+
+
+### Data Classes
+
+- The system utilizes several data classes to handle file metadata and transfer-related data:
+
+  - `DataFileServer`: Represents a file on the server, storing information such as file ID, name, size, and output path.
+
+  - `DataClient`: Represents a connected client, storing the `SocketIOClient` object, client name, and a map of `DataWriter` objects for handling file downloads.
+
+  - `DataReader`: Handles reading a file in chunks and sending it to the server during file uploads.
+
+  - `DataWriter`: Handles writing file chunks received from the server to disk during file downloads.
+
+
+### Event-Driven Communication
+
+- The communication between the client and server is facilitated by the Socket.IO library, which enables real-time, event-driven communication.
+
+- Various events, such as "set_user", "request", "send_file", and "request_file", are used to trigger specific actions on the server or client.
+
+- Acknowledgements (`Ack` objects) are used to send responses back to the client for certain events.
+
+
+### File Transfer Process
+
+- File uploads are initiated by the client, which reads the file in chunks using `RandomAccessFile` and sends the chunks to the server via Socket.IO events.
+
+
+- The server receives the file chunks and writes them to disk using `RandomAccessFile`.
+
+
+- File downloads are initiated by the client, requesting file chunks from the server. The server reads the requested chunk from the file and sends it back to the client.
+
+
+- The client receives the file chunks and writes them to disk using `RandomAccessFile`.
+
+
+- The progress of file transfers is tracked and displayed in real-time on both the client and server GUIs.
 
 ## Installation
 1. **Prerequisites**: Java JDK 8 or higher.
@@ -33,91 +165,8 @@ This project is a Java-based file transfer system designed to facilitate seamles
 - **Starting the Server**: Run `Server.java`. Use the GUI to monitor connections and transfers.
 - **Running a Client**: Run `Main_Client.java`. Connect to the server, choose files to upload or download.
 
-## Data Flows
+## Conclusion
 
-### User Uploads a File to the Server
-1. **File Selection**: User selects a file for upload via the client's GUI.
-2. **File Reading**: `DataReader` reads the file in chunks.
-3. **Data Transfer**: The chunks are sent to the server using Socket.IO.
-4. **Writing on Server**: Server's `DataWriter` writes chunks to the server's filesystem.
-5. **Progress Update**: Both client and server GUIs update the upload progress.
-
-### User Connects and Downloads a File
-1. **Requesting Files**: Client requests a list of available files after connecting.
-2. **File Selection**: User selects a file to download.
-3. **Server Sends File**: Server sends the file in chunks to the client.
-4. **Writing on Client**: Client's `DataWriter` writes these chunks to the filesystem.
-5. **Progress Update**: Download progress is shown on the client's GUI.
-
-### Pause/Resume Transfer
-1. **User Action**: User pauses/resumes a transfer via the GUI.
-2. **State Management**: The application stops/continues reading and sending file data.
-3. **Progress Update**: The GUI updates to reflect the changed transfer state.
-
-## Additional Information
-- **Error Handling**: The system handles network errors and file I/O issues, logging exceptions and ceasing operations if necessary.
-- **Security Note**: This application does not encrypt data transfers. Use it in trusted networks.
-
-## Contributing
-Contributions are welcome. Please fork the repository and submit a pull request with your changes.
-
-## TODO:
-Implement it to be a decentralized system where clients can download from each other and the server tracks the distribution of chunks across clients and coordinates the download of chunks from different clients simultaneously to assemble the file. Similar to BitTorrent.
-
-### Step 1: File Upload and Metadata Storage
-- **Server Side**:
-  - Implement MD5 hashing of the uploaded file.
-  - Create a CSV file structure with columns for `file_id`, `file_name`, `file_size`, `md5_hash`, `server_path`, and `client_distribution`.
-  - Store file metadata in the CSV upon upload.
-  - Save the file on the server and split it into chunks.
-
-### Step 2: Initial Download and IP Tracking
-- **Server Side**:
-  - On download request, serve the file from the server to the first client.
-  - Update the CSV, appending the client's IP to the `client_distribution` column, indicating that this client now has 100% of the file.
-
-### Step 3: Subsequent Downloads and Chunk Distribution
-- **Server Side**:
-  - Determine which clients have parts of the requested file based on the CSV.
-  - Direct new clients to download different chunks from different existing clients.
-  - Update the CSV to reflect the new distribution after each download.
-
-### Step 4: Server as Assembler and Validator
-- **Server Side**:
-  - After all chunks are downloaded, reassemble the file.
-  - Verify the file's integrity using MD5 hash.
-  - If the hash is correct, send the file to the requesting client.
-  - If not, send the server's original copy to ensure integrity.
-
-### Download Progress Bar and Status
-- **Client Side**:
-  - Modify the download progress bar to reflect the multi-source download process.
-  - Add a status message indicating the server's role in downloading and assembling chunks.
-
-### Implementation Steps
-#### Server Implementation
-1. Modify the `DataFileServer` class to handle MD5 hashing upon file upload.
-2. Update the server's upload handler to split files into chunks and store them.
-3. Implement functions to update the CSV with client IP and file chunk information.
-4. Create a function to orchestrate chunk downloads from multiple clients.
-5. Write a method to reassemble and validate the file using MD5 before sending it to the client.
-
-#### Client Implementation
-1. Update the client application to support downloading file chunks from multiple sources (other clients).
-2. Implement a function to upload file chunks to other clients upon request.
-3. Modify the client's download functionality to show a combined progress bar for chunks from different sources.
-4. Add UI elements to display the server's assembly and validation process.
-
-#### CSV File Handling
-1. Create a utility function to read and update the CSV file safely, handling serialization and deserialization of the `client_distribution` column.
-2. Implement logic to fairly distribute download requests across clients based on the chunk distribution.
-
-#### Testing and Validation
-1. Test the file upload process to ensure that the MD5 hash is correctly generated and stored.
-2. Validate the download process, ensuring that clients can download chunks from the server and other clients.
-3. Verify that the server correctly assembles and validates the file.
-4. Test the entire system with multiple clients to ensure proper operation and accurate tracking of file chunks.
-
-By following these steps, you will transform the existing system into a decentralized model that distributes file chunks across clients and leverages the server for coordination, validation, and fallback. This approach reduces the server's bandwidth and storage requirements and can improve download speeds by parallelizing the download process.
-
-
+The File Transfer System provides a reliable and efficient solution for sharing files between multiple clients through a centralized server. With its user-friendly interface, real-time progress tracking, and support for concurrent client connections, the system offers a seamless file transfer experience. The event-driven architecture, powered by Socket.IO, ensures responsive and real-time communication between clients and the server.
+<br>
+Feel free to explore the codebase and customize the application according to your specific requirements. Contributions and feedback are welcome to further enhance the functionality and performance of the File Transfer System.
